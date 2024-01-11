@@ -6,8 +6,14 @@ const regd_users = express.Router();
 let users = [];
 
 const isValid = (username)=>{ //returns boolean
-//write code to check is the username is valid
-}
+    //write code to check is the username is valid
+     let filtered = users.filter((user)=>user.username === username);
+      if(filtered.length > 0){
+        return false;
+      }else{
+        return true;
+      }
+    }
 
 const authenticatedUser = (username,password)=>{ //returns boolean
     //write code to check if username and password match the one we have in records.
@@ -21,13 +27,14 @@ const authenticatedUser = (username,password)=>{ //returns boolean
 
 //only registered users can login
 regd_users.post("/login", (req,res) => {
+    //Write your code here
     const {username, password} = req.body;
     if (username && password) {
         console.log(`AUTHENTICATING: User: ${username}`);
       if (authenticatedUser(username, password)) {
           // console.log(username + " " + password);
         
-          let accessToken = jwt.sign({data: password}, "SECRET_KEY", {expiresIn: 60 * 60});
+          let accessToken = jwt.sign({data: password}, 'SECRET_KEY', {expiresIn: 60 * 60});
   
       //   console.log(accessToken);
         
@@ -42,8 +49,9 @@ regd_users.post("/login", (req,res) => {
       return res.status(401).json({message: "Unauthorized Access"});
   }  
       console.log("LOGIN UNSUCESSFUL: username or password missing");
-    return res.status(400).json({message: "Username or Password is missing"});});
-
+    return res.status(400).json({message: "Username or Password is missing"});
+  });
+  
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
     const user = req.session.authorization.username;
@@ -56,7 +64,7 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     book = books[isbn];
     if (book) {
       book.reviews[user] = review;
-      return res.status(200).json({message: "Review added successfully"});
+      return res.status(200).send(`The Review for the book with ISBN ${req.params.isbn} added successfully`);
     }
   
     // return content not found
@@ -69,7 +77,7 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
     if (book) {
       if (book.reviews[user]) {
         delete book.reviews[user];
-        return res.status(200).json({message: "Review deleted successfully"});
+        return res.status(200).json(`Reviews for the ISBN ${isbn} posted by the user ${book.author} deleted`);
       }
       return res.status(404).json({message: "Review not found"});
     }

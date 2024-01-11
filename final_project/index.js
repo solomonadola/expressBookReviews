@@ -8,7 +8,7 @@ const app = express();
 
 app.use(express.json());
 
-app.use("/customer", session({ secret: "fingerprint_customer", resave: true, saveUninitialized: true }))
+app.use("/customer", session({ secret: "SECRET_KEY", resave: true, saveUninitialized: true }))
 
 app.use("/customer/auth/*", function auth(req, res, next) {
     // write auth logic with express-session from the request object
@@ -19,7 +19,7 @@ app.use("/customer/auth/*", function auth(req, res, next) {
 
         let token = req.session.authorization.accessToken;
         // console.log(token);
-        jwt.verify(token, SECRET_KEY, (err, decoded) => {
+        jwt.verify(token, 'SECRET_KEY', (err, decoded) => {
             if (!err) {
                 // req.user = decoded;
                 console.log("AUTHORIZING SUCCESSFUL");
